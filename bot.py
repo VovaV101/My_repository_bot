@@ -1,7 +1,9 @@
 from typing import Tuple, List, Generator
 
-from base import AddressBook, Record, RecordAlreadyExistsException, Birthday
-from save_data.save_on_disk import SaveAddressBookOnDisk
+from src.address_book import AddressBook
+from src.birthday import Birthday
+from src.record import RecordAlreadyExistsException, Record
+from src.save_data.save_on_disk import SaveAddressBookOnDisk
 
 records = dict()
 contacts = AddressBook(data_save_tool=SaveAddressBookOnDisk(address="address_book.json"))
