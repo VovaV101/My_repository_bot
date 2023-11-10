@@ -213,6 +213,21 @@ def search_contact(*args) -> str:
 
 
 @input_error
+def add_phone(*args):
+    name = args[0]
+    phone = args[1]
+    rec = contacts.find(name)
+    if rec:
+        rec.add_phone(phone)
+        contacts.update_record(rec)
+        return f"Phone for contact {rec.name.value} has been added successfully"
+    else:
+        raise ValueError(f"The contact with the name '{name}' doesn't exist in the "
+                         f"Address Book. Add it first, please.")
+
+
+
+@input_error
 def good_bye() -> str:
     """
     Method that returns "Good bye!" string.
@@ -250,7 +265,7 @@ def unknown() -> str:
 
 COMMANDS = {
     "hello": hello,
-    "add": add_contact,
+    "add_contact": add_contact,
     "delete": delete_contact,
     "change": change_phone,
     "update birthday": update_birthday,
@@ -261,6 +276,7 @@ COMMANDS = {
     "exit": good_bye,
     "show days to birthday": show_days_to_birthday,
     "search": search_contact,
+    "add_phone": add_phone
 }
 
 
