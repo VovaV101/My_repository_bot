@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, date, time
 
 from src.field import Field
 
@@ -41,3 +41,12 @@ class Birthday(Field):
             raise ValueError(f"Client birthday '{birthday}' or date format is "
                              f"incorrect. Expected date format is '{DATE_FORMAT}'."
                              f"Check it, please.")
+        
+    def to_datetime(self) -> datetime:
+        """
+        Convert the birthday date to a datetime object.
+        :return: Datetime object.
+        """
+        if not isinstance(self.value, date):
+            raise TypeError("The birthday value must be a datetime.date object")
+        return datetime.combine(date(datetime.now().year, self.value.month, self.value.day), time.min)
