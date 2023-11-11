@@ -186,6 +186,11 @@ def search_contact(*args) -> str:
 
 @input_error
 def add_phone(*args):
+    """
+    Method that adds phone for the contact in the AddressBook.
+    :param args: Input parameters (name and phone).
+    :return: String with information about adding a new phone.
+    """
     name = args[0]
     phone = args[1]
     rec = contacts.find(name)
@@ -197,7 +202,43 @@ def add_phone(*args):
         raise ValueError(f"The contact with the name '{name}' doesn't exist in the "
                          f"Address Book. Add it first, please.")
 
+@input_error
+def add_address(*args):
+    """
+    Method adds address to the contact.
+    :param args: Input arguments: country, city, street, house, apartment.
+    :return: String with the added address.
+    """
+    name = args[0]
+    address_str = ' '.join(list(args[1:]))
+    address = address_str.split(', ')
+    rec = contacts.find(name)
+    if rec:
+        rec.add_address(address)
+        contacts.update_record(rec)
+        return (f"Address: **{', '.join([addr for addr in address if addr])}** for "
+                f"contact {rec.name.value} has been added successfully")
+    else:
+        raise ValueError(f"The contact with the name '{name}' doesn't exist in the "
+                         f"Address Book. Add it first, please.")
 
+@input_error
+def add_email(*args):
+    """
+    Method adds email to the contact.
+    :param args: Input arguments from console.
+    :return: String with the information about adding email.
+    """
+    name = args[0]
+    email = args[1]
+    rec = contacts.find(name)
+    if rec:
+        rec.add_email(email)
+        contacts.update_record(rec)
+        return f"Email for contact {rec.name.value} has been added successfully"
+    else:
+        raise ValueError(f"The contact with the name '{name}' doesn't exist in the "
+                         f"Address Book. Add it first, please.")
 
 @input_error
 def good_bye() -> str:
@@ -237,7 +278,7 @@ def unknown() -> str:
 
 COMMANDS = {
     "hello": hello,
-    "add_contact": add_contact,
+    "add contact": add_contact,
     "delete": delete_contact,
     "change": change_phone,
     "update birthday": update_birthday,
@@ -248,7 +289,9 @@ COMMANDS = {
     "exit": good_bye,
     "show days to birthday": show_days_to_birthday,
     "search": search_contact,
-    "add_phone": add_phone
+    "add phone": add_phone,
+    "add address": add_address,
+    "add email": add_email,
 }
 
 

@@ -8,7 +8,8 @@ from src.birthday import Birthday, DATE_FORMAT
 from src.name import Name
 from src.phone import Phone
 from src.address import Address
-from src.email import Email
+from src.email_address import Email
+
 
 class RecordAlreadyExistsException(Exception):
     """
@@ -28,13 +29,13 @@ class Record:
         self.name = Name(name)
         self.phones = []
         self.birthday = Birthday(birthday)
-        self.address = None
+        self.address = Address([])
         self.emails = []
 
     def __str__(self):
         return f"Contact name: {self.name.value}, phones:" \
-               f" {'; '.join(p.value for p in self.phones)}, address:"\
-               f" {self.address}, emails:"\
+               f" {'; '.join(p.value for p in self.phones)}, address:" \
+               f" {self.address}, emails:" \
                f" {'; '.join(em.value for em in self.emails)}"
 
     def __repr__(self) -> str:
@@ -43,10 +44,7 @@ class Record:
         if birthday:
             birthday_str = birthday.strftime(DATE_FORMAT)
 
-        address = self.address  
-        address_str = None 
-        if address:
-            address_str = str(address)
+        address: dict = self.address.get_addr_dict()
 
         return json.dumps(
             {
@@ -54,7 +52,7 @@ class Record:
                     {
                         "phones": [phone_num.value for phone_num in self.phones],
                         "birthday": birthday_str,
-                        "address": address_str,
+                        "address": address,
                         "emails": [email.value for email in self.emails]
                     }
             }
@@ -148,13 +146,13 @@ class Record:
         self.birthday = Birthday(birthday=birthday)
         return f"Birthday '{birthday}' was successfully added to the birthday '" \
                f"{self.name.value}'"
-    
-    def add_address(self, address:list):
+
+    def add_address(self, address: list):
         self.address = Address(address)
         return f"Address '{address}' was successfully added to the address '" \
                f"{self.name.value}'"
-    
-    def add_email(self, email:str):
+
+    def add_email(self, email: str):
         self.emails.append(Email(email))
         return f"Email '{email}' was successfully added to the contact '" \
                f"{self.name.value}'"
