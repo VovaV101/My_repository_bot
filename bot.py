@@ -4,6 +4,7 @@ from src.address_book import AddressBook
 from src.birthday import Birthday
 from src.record import RecordAlreadyExistsException, Record
 from src.save_data.save_on_disk import SaveAddressBookOnDisk
+from utils.format_str import FormatStr
 
 records = dict()
 contacts = AddressBook(data_save_tool=SaveAddressBookOnDisk(address="address_book.json"))
@@ -29,35 +30,6 @@ def input_error(func: callable) -> callable:
             return err
 
     return wrapper
-
-
-def get_formatted_headers() -> str:
-    """
-    Method generate formatted headers string.
-    :return: Formatted headers string.
-    """
-    s = "{:^50}".format("***Clients phone numbers***")
-    s += "\n{:<10} | {:<20} | {:<70} |\n".format("Number", "User name", "Phone number")
-    return s
-
-
-def show_address_book(records: Generator) -> str:
-    """
-    Method shows information about records from Address Book. The data is formatted in a
-    string with headers.
-    :param records: Generator that stores data about Address Book rows.
-    :return: Formatted string.
-    """
-    s = get_formatted_headers()
-    counter = 1
-    for record_list in records:
-        for record in record_list:
-            phones_str = ",".join([phone_num for phone_num in record[1]["phones"]])
-            s += '{:<10} | {:<20} | {:<70} |\n'.format(counter, record[0],
-                                                       phones_str)
-            counter += 1
-        s += "---------------------------+++------------------------------------\n"
-    return s
 
 
 @input_error
@@ -187,7 +159,7 @@ def show_all(*args) -> str:
     if args:
         record_num = int(args[0])
     records = contacts.iterator(record_num)
-    return show_address_book(records)
+    return FormatStr.show_address_book(records)
 
 
 @input_error
@@ -202,7 +174,7 @@ def search_contact(*args) -> str:
         raise ValueError("Searched phrase must have at least 2 symbols")
     records = contacts.search_contact(search_phrase=search_phrase)
     counter = 1
-    searched_str = get_formatted_headers()
+    searched_str = FormatStr.get_formatted_headers()
     for record in records:
         phones_str = ",".join([phone_num for phone_num in record["info"]["phones"]])
         searched_str += '{:<10} | {:<20} | {:<70} |\n'.format(counter, record["name"],
@@ -210,6 +182,21 @@ def search_contact(*args) -> str:
         counter += 1
     searched_str += "--------------------------+++-----------------------------------\n"
     return searched_str
+
+
+@input_error
+def add_phone(*args):
+    name = args[0]
+    phone = args[1]
+    rec = contacts.find(name)
+    if rec:
+        rec.add_phone(phone)
+        contacts.update_record(rec)
+        return f"Phone for contact {rec.name.value} has been added successfully"
+    else:
+        raise ValueError(f"The contact with the name '{name}' doesn't exist in the "
+                         f"Address Book. Add it first, please.")
+
 
 
 @input_error
@@ -250,7 +237,7 @@ def unknown() -> str:
 
 COMMANDS = {
     "hello": hello,
-    "add": add_contact,
+    "add_contact": add_contact,
     "delete": delete_contact,
     "change": change_phone,
     "update birthday": update_birthday,
@@ -261,6 +248,7 @@ COMMANDS = {
     "exit": good_bye,
     "show days to birthday": show_days_to_birthday,
     "search": search_contact,
+    "add_phone": add_phone
 }
 
 
