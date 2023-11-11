@@ -87,6 +87,14 @@ class AddressBook(UserDict):
             record_obj = Record(name=name, birthday=record.get("birthday"))
             for phone in record["phones"]:
                 record_obj.add_phone(phone_num=phone)
+
+            address = record["address"]    
+            if address:
+                record_obj.add_address(address)  
+
+            for email in record["emails"]:
+                record_obj.add_email(email)
+
             return record_obj
         else:
             return None
