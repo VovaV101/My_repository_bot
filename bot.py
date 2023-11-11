@@ -39,8 +39,6 @@ def parse_cli_command(cli_input: str) -> Tuple[str, callable, List[str]]:
     :param cli_input: String from CLI.
     :return: Function name, function object and function arguments.
     """
-    if cli_input == ".":
-        return "good_bye", COMMANDS["good bye"], []
     for command_name, func in COMMANDS.items():
         if cli_input.lower().startswith(command_name):
             return command_name, func, cli_input[len(command_name):].strip().split()
@@ -227,6 +225,26 @@ def show_days_to_birthday(*args) -> str:
 
 
 @input_error
+def upcoming_birthdays(*args) -> str:
+    """
+    Method that shows upcoming birthdays within a specified number of days.
+    :param args: Number of days.
+    :return: String with upcoming birthdays.
+    """
+    days_threshold = int(args[0])
+    upcoming_birthdays = contacts.get_contacts_upcoming_birthdays(days_threshold)
+
+    result_str = FormatStr.get_formatted_headers()
+    for contact in upcoming_birthdays:
+        result_str += "{:<10} | {:<20} | {:<70} |\n".format(
+            contact['name'], contact['info']['birthday'],
+            contact['days_to_birthday'])
+
+    result_str += "--------------------------+++-----------------------------------\n"
+    return result_str
+
+
+@input_error
 def unknown() -> str:
     """
     Method can be called when was typed a command that can't be recognised.
@@ -248,7 +266,8 @@ COMMANDS = {
     "exit": good_bye,
     "show days to birthday": show_days_to_birthday,
     "search": search_contact,
-    "add_phone": add_phone
+    "add_phone": add_phone,
+    "upcoming birthdays": upcoming_birthdays,
 }
 
 
