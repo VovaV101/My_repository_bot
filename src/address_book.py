@@ -1,4 +1,5 @@
 from __future__ import annotations
+from datetime import datetime, date, time
 
 import json
 from collections import UserDict
@@ -131,3 +132,25 @@ class AddressBook(UserDict):
         else:
             raise ValueError(f"Contact with the name '{name}' doesn't exist in the "
                              f"Address Book")
+          
+    def get_contacts_upcoming_birthdays(self, days_threshold: int) -> Generator:
+        """
+        Method returns a generator of contacts whose birthdays are within a specified
+        number of days from the current date.
+        :param days_threshold: Number of days.
+        :return: Generator of contacts and their upcoming birthdays.
+        """
+        if not isinstance(days_threshold, int) or days_threshold < 0:
+            raise ValueError("days_threshold should be a non-negative integer.")
+
+        current_date = datetime.now()
+        address_book: dict = self.data_save_tool.read_info(path=self.data_save_tool.address)
+
+        for contact_name, contact_info in address_book.items():
+            record = self.find(contact_name)
+            if record and record.birthday.value:
+                birthday_date = record.birthday.to_datetime().date()
+                days_to_birthday = (birthday_date - current_date.date()).days
+
+                if 0 <= days_to_birthday <= days_threshold:
+                    yield {"name": contact_name, "info": contact_info, "days_to_birthday": days_to_birthday}
