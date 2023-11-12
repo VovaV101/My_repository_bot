@@ -124,17 +124,7 @@ class AddressBook(UserDict):
         else:
             raise ValueError(f"Contact with the name '{name}' doesn't exist in the "
                              f"Address Book")
-    
-    def to_datetime(self, current_year: int) -> datetime:
-        """
-        Convert the birthday date to a datetime object.
-        :param current_year: The current year for constructing the datetime object.
-        :return: Datetime object.
-        """
-        if not isinstance(self.value, date):
-            raise TypeError("The birthday value must be a datetime.date object")
-        return datetime.combine(date(current_year, self.value.month, self.value.day), time.min)
-        
+          
     def get_contacts_upcoming_birthdays(self, days_threshold: int) -> Generator:
         """
         Method returns a generator of contacts whose birthdays are within a specified
