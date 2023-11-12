@@ -1,10 +1,13 @@
-from typing import Tuple, List, Generator
+from typing import Tuple, List
+
+from prompt_toolkit import prompt
 
 from src.address_book import AddressBook
 from src.birthday import Birthday
 from src.record import RecordAlreadyExistsException, Record
 from src.save_data.save_on_disk import SaveAddressBookOnDisk
-from utils.format_str import FormatStr
+from src.utils.command_prompts import get_nested_completer
+from src.utils.format_str import FormatStr
 
 records = dict()
 contacts = AddressBook(data_save_tool=SaveAddressBookOnDisk(address="address_book.json"))
@@ -200,6 +203,7 @@ def add_phone(*args):
         raise ValueError(f"The contact with the name '{name}' doesn't exist in the "
                          f"Address Book. Add it first, please.")
 
+
 @input_error
 def add_address(*args):
     """
@@ -220,6 +224,7 @@ def add_address(*args):
         raise ValueError(f"The contact with the name '{name}' doesn't exist in the "
                          f"Address Book. Add it first, please.")
 
+
 @input_error
 def add_email(*args):
     """
@@ -237,6 +242,7 @@ def add_email(*args):
     else:
         raise ValueError(f"The contact with the name '{name}' doesn't exist in the "
                          f"Address Book. Add it first, please.")
+
 
 @input_error
 def good_bye() -> str:
@@ -294,7 +300,42 @@ def unknown() -> str:
     return "Unknown command. Try again."
 
 
+def help_command() -> str:
+    """
+    Method that returns instructions for the bot commands.
+    :return: String with instructions for the bot commands.
+    TODO: rewrite method with all commands when they all will be implemented
+    """
+    return """List of supported commands:\n
+           1 - 'hello' to greet the bot;\n
+           2 - 'add' to add a contact, e.g. 'add John 380995057766';\n
+           or 'add John 380995057766 30-05-1967';\n
+           3 - 'change' to change an existing contact's phone,\n
+           e.g. 'change John 380995051919 1234567890';\n
+           4 - 'phone' to see a contact, e.g. 'phone John';\n
+           5 - 'show all' to show all contacts which were add during the 
+           session with the bot:\n
+           6 - 'good bye', 'close' or 'exit' to stop the bot;\n
+           7 - 'search na' or 'search 123' to search in the address book 
+           by any match in name or phone;\n
+           8 - 'delete john' to remove a whole contact by name.\n
+           9 - 'help' to see description and supported commands.\n\n
+           Each command, name or phone should be separated by a 
+           space like ' '.
+           Each command should be entered in order like 'command name 
+           phone'.\n
+           Each contact's name has to be unique.\n
+           Each contact's name should be entered like a single word, if\n
+           desired name is first name and last name, separate them with\n
+           underscore, e.g. John_Wick.\n
+           You can add only one phone to the name.\n
+           Purpose of the bot to create, modify and save contacts during\n
+           a single session. All data will be deleted after exit from the\n
+           session."""
+
+
 COMMANDS = {
+    "help": help_command,
     "hello": hello,
     "add contact": add_contact,
     "delete": delete_contact,
@@ -322,7 +363,10 @@ def main() -> None:
     :return: None.
     """
     while True:
-        cli_input = input("Type a command>>> ")
+        cli_input = prompt(message="Type a command>>> ",
+                           completer=get_nested_completer(),
+                           bottom_toolbar="Run 'help' command for getting additional "
+                                          "information about bot commands")
         func_name, func, func_args = parse_cli_command(cli_input)
         print(func(*func_args))
         if func_name in ("good bye", "close", "exit"):
