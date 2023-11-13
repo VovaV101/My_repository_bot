@@ -1,5 +1,5 @@
 import re
-from src.field import Field
+from bot_helper.bot_helper.field import Field
 
 class Email(Field):
     """
