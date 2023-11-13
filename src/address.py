@@ -4,6 +4,10 @@ from src.field import Field
 
 class Address(Field):
 
+    """
+    This class is a derived class from Field and needed for storing address of the client.
+    """
+
     def __init__(self, address: list):
         self.value = address
         self.country, self.city, self.street, self.house, self.apartment = address
@@ -11,6 +15,10 @@ class Address(Field):
 
     @property
     def value(self) -> list:
+        """
+        Getter method for getting address.
+        :return: Address.
+        """
         return self.__value
 
     @value.setter

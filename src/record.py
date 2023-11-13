@@ -140,7 +140,7 @@ class Record:
     def add_birthday(self, birthday: str) -> str:
         """
         Method adds Birthday instance to the field 'birthday' for the particular client.
-        :param birthday: Phone number as a string.
+        :param birthday: Birthday date as a string.
         :return: Notification with the information about adding birthday.
         """
         self.birthday = Birthday(birthday=birthday)
@@ -148,11 +148,21 @@ class Record:
                f"{self.name.value}'"
 
     def add_address(self, address: list):
+        """
+        Method adds Address instance to the field 'address' for the particular client.
+        :param address: country, city, street, house, apartment.
+        :return: Notification with the information about adding address.
+        """
         self.address = Address(address)
         return f"Address '{address}' was successfully added to the address '" \
                f"{self.name.value}'"
 
     def add_email(self, email: str):
+        """
+        Method adds Email instances into the list of emails for a particular client.
+        :param email: Email address as a string.
+        :return: Notification with the information about adding email.
+        """
         self.emails.append(Email(email))
         return f"Email '{email}' was successfully added to the contact '" \
                f"{self.name.value}'"
