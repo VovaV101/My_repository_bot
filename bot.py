@@ -281,7 +281,7 @@ def upcoming_birthdays(*args) -> str:
     days_threshold = int(args[0])
     upcoming_birthdays = contacts.get_contacts_upcoming_birthdays(days_threshold)
 
-    result_str = FormatStr.get_formatted_headers()
+    result_str = FormatStr.get_formatted_headers_birthdays()
     for contact in upcoming_birthdays:
         result_str += "{:<10} | {:<20} | {:<70} |\n".format(
             contact['name'], contact['info']['birthday'],
