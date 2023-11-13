@@ -6,6 +6,8 @@ class FormatStr:
     Class for formatting text output in bot module.
     """
 
+    ADDRESS_KEY_LIST = ["country", "city", "street", "house", "apartment"]
+
     @staticmethod
     def get_formatted_headers() -> str:
         """
@@ -36,7 +38,6 @@ class FormatStr:
                 phones_list: list = record[1]["phones"] if record[1]["phones"] else ["None"]
                 emails_list: list = record[1]["emails"] if record[1]["emails"] else ["None"]
                 address_dic: dict = record[1]["address"]
-                ADDRESS_KEY_LIST = ["country", "city", "street", "house", "apartment"]
 
                 if len(phones_list) <= 5:
                     for _ in range(5 - len(phones_list)):
@@ -58,14 +59,14 @@ class FormatStr:
 
                 for indx in range(1, 5):
                     s += '{:<10} | {:<20} | {:<12} | {:<11} | {:<35} | {:<10} {:<15} |\n'.format(
-                                                                        "",
-                                                                        "",
-                                                                        phones_list[indx],
-                                                                        "",
-                                                                        emails_list[indx],
-                                                                        f"{ADDRESS_KEY_LIST[indx]}:",
-                                                                        str(address_dic[ADDRESS_KEY_LIST[indx]])
-                                                                        )
+                                                        "",
+                                                        "",
+                                                        phones_list[indx],
+                                                        "",
+                                                        emails_list[indx],
+                                                        f"{FormatStr.ADDRESS_KEY_LIST[indx]}:",
+                                                        str(address_dic[FormatStr.ADDRESS_KEY_LIST[indx]])
+                                                        )
                 counter += 1
                 s += "{:-<64}+++{:->64}\n".format("", "")
         return s
