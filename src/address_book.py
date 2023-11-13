@@ -127,7 +127,7 @@ class AddressBook(UserDict):
                     found_address
                     ]
                     ):
-                yield {contact_name: contact_info}
+                yield {"name": contact_name, "info": contact_info}
 
     def delete(self, name: str) -> None:
         """

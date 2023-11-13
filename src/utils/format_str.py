@@ -67,5 +67,5 @@ class FormatStr:
                                                                         str(address_dic[ADDRESS_KEY_LIST[indx]])
                                                                         )
                 counter += 1
-            s += "{:-<64}+++{:->64}\n".format("", "")
+                s += "{:-<64}+++{:->64}\n".format("", "")
         return s
