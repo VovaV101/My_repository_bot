@@ -22,6 +22,13 @@ class FormatStr:
                                                                           "Email",
                                                                           "Address")
         return s
+    
+    @staticmethod 
+    def get_formatted_headers_birthdays() -> str: 
+        """ Method generate formatted headers string. :return: Formatted headers string. """ 
+        s = "{:^50}".format("***Clients birthdays***") 
+        s += "\n{:<10} | {:<20} | {:<70} |\n".format("Name", "Info birthdays", "Days for birthday") 
+        return s
 
     @staticmethod
     def show_address_book(records: Generator) -> str:
