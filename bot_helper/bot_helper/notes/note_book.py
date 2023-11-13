@@ -2,8 +2,11 @@ from typing import List
 
 from tabulate import tabulate
 
+from bot_helper.bot_helper.record import RecordAlreadyExistsException, \
+    RecordWasNotFoundException
 from bot_helper.bot_helper.save_data.save_on_disk import SaveAddressBookOnDisk
-from bot_helper.bot_helper.notes.notes_data_strcture import build_dto_by_schema, Note
+from bot_helper.bot_helper.notes.notes_data_strcture \
+    import build_dto_by_schema, Note
 
 
 class NotesBook:
@@ -16,7 +19,26 @@ class NotesBook:
         self.data_save_tool = data_save_tool
 
     @staticmethod
-    def _note_exists(title: str, existing_data: dict) -> bool:
+    def input_error_notes(func: callable) -> callable:
+        """
+        Decorator that wraps the function to handle possible errors.
+        :param func: Function that should be wrapped.
+        :return: Wrapped function.
+        """
+
+        def wrapper(*args, **kwargs):
+            try:
+                return func(*args, **kwargs)
+            except RecordAlreadyExistsException:
+                return f"Note already exists, try to use an unique title. " \
+                       f"Params: {kwargs}. Changes were not applied."
+            except RecordWasNotFoundException:
+                return f"Note was not found. Params: {kwargs}."
+
+        return wrapper
+
+    @staticmethod
+    def _note_exists(*, title: str, existing_data: dict) -> bool:
         """
         Check that note exists in the existing data by title.
         :param title: Exact match of title used to find a note in an array of
@@ -36,8 +58,9 @@ class NotesBook:
         """
         return self.data_save_tool.read_info(path=self.data_save_tool.address)
 
+    @input_error_notes
     def add_note(
-            self, title: str, content: str, tags: List[str] | list = None
+            self, *, title: str, content: str, tags: List[str] | list = None
     ) -> str:
         """
         Add a new note with the specified title, content and tags.
@@ -51,8 +74,8 @@ class NotesBook:
             title=title, content=content, tags=tags
         )
 
-        if self._note_exists(title, existing_data):
-            return f"Note with title '{title}' already exists."
+        if self._note_exists(title=title, existing_data=existing_data):
+            raise RecordAlreadyExistsException
 
         existing_data.setdefault("notes", [])
         existing_data["notes"].append(record_notes.get("notes")[0])
@@ -63,15 +86,16 @@ class NotesBook:
         )
         return f"Note with title '{title}' added successfully."
 
-    def delete_note(self, title: str) -> str:
+    @input_error_notes
+    def delete_note(self, *, title: str) -> str:
         """
         Delete a note with the specified title.
         :param title: The title of the note to be deleted.
         :return: A message indicating the success or failure of the operation.
         """
         existing_data = self._read_existing_data()
-        if not self._note_exists(title, existing_data):
-            return f"Note with title '{title}' not found."
+        if not self._note_exists(title=title, existing_data=existing_data):
+            raise RecordWasNotFoundException
         # Find the index of the note with the specified title
         index_to_remove = next(
             (idx for idx, note in enumerate(existing_data["notes"]) if
@@ -85,7 +109,7 @@ class NotesBook:
                 path=self.data_save_tool.address, data=existing_data
             )
             return f"Note with title '{title}' deleted successfully."
-        return f"Note with title '{title}' was not found."
+        raise RecordWasNotFoundException
 
     def show_all_notes(self) -> str:
         """
@@ -119,7 +143,7 @@ class NotesBook:
         return f"\nAll Notes:\n{formatted_table}\n"
 
     @staticmethod
-    def _sort_notes(data: list, sort_key: str, reverse: bool) -> list | str:
+    def _sort_notes(*, data: list, sort_key: str, reverse: bool) -> list | str:
         """
         Sort a list of notes based on the specified key and order.
         :param data: The list of notes to be sorted.
@@ -142,7 +166,7 @@ class NotesBook:
         )
 
     def search_note(
-            self, query: str, sort_by: str = 'title_asc',
+            self, *, query: str, sort_by: str = 'title_asc',
             sort_desc: bool = False
     ) -> str:
         """
@@ -171,12 +195,11 @@ class NotesBook:
             "tag_") else f"Query '{query}'"
 
         if found_notes:
-
             # Sort the notes
             sorted_notes = self._sort_notes(
                 data=found_notes, sort_key=sort_by, reverse=sort_desc
             )
-
+            # Return error text if notes were not found
             if isinstance(sorted_notes, str):
                 return sorted_notes
 
@@ -194,7 +217,8 @@ class NotesBook:
         else:
             return f"\nNotes were not found by {tag_description}.\n"
 
-    def add_tags_by_title(self, title: str, tags: List[str]) -> str:
+    @input_error_notes
+    def add_tags_by_title(self, *, title: str, tags: List[str]) -> str:
         """
         Add tags to a note with the specified title.
         :param title: The title of the note to which tags will be added.
@@ -222,7 +246,7 @@ class NotesBook:
                 existing_data["notes"][idx]["tags"] = existing_tags
 
         if not note_found:
-            return f"Note with title '{title}' was not found."
+            raise RecordWasNotFoundException
 
         self.data_save_tool.save_info(
             path=self.data_save_tool.address,
@@ -238,24 +262,24 @@ class NotesBook:
         return f"All specified tags already exist for the note with title " \
                f"'{title}'.\nExisting Tags: {', '.join(existing_tags)}"
 
-    def change_note_title(self, old_title: str, new_title: str) -> str:
+    @input_error_notes
+    def change_note_title(self, title: str, new_title: str) -> str:
         """
         Change the title of a note.
-        :param old_title: The current title of the note.
+        :param title: The current title of the note.
         :param new_title: The new title for the note.
         :return: A message indicating the success or failure of the operation.
         """
         existing_data = self._read_existing_data()
 
-        if not self._note_exists(old_title, existing_data):
-            return f"Note with title '{old_title}' not found."
+        if not self._note_exists(title=title, existing_data=existing_data):
+            raise RecordWasNotFoundException
 
-        if self._note_exists(new_title, existing_data):
-            return f"Note with title '{new_title}' " \
-                   f"already exists. Title not changed."
+        if self._note_exists(title=new_title, existing_data=existing_data):
+            raise RecordAlreadyExistsException
 
         for note_data in existing_data["notes"]:
-            if note_data["title"] == old_title:
+            if note_data["title"] == title:
                 note_data["title"] = new_title
                 break
 
@@ -264,10 +288,11 @@ class NotesBook:
             data=existing_data
         )
 
-        return f"Note title changed from '{old_title}' to " \
+        return f"Note title changed from '{title}' to " \
                f"'{new_title}' successfully."
 
-    def change_note_content(self, title: str, new_content: str) -> str:
+    @input_error_notes
+    def change_note_content(self, *, title: str, new_content: str) -> str:
         """
         Change the content of a note.
         :param title: The title of the note.
@@ -276,8 +301,8 @@ class NotesBook:
         """
         existing_data = self._read_existing_data()
 
-        if not self._note_exists(title, existing_data):
-            return f"Note with title '{title}' not found."
+        if not self._note_exists(title=title, existing_data=existing_data):
+            raise RecordWasNotFoundException
 
         for note_data in existing_data["notes"]:
             if note_data["title"] == title:
@@ -318,95 +343,97 @@ if __name__ == '__main__':
 
     # Test change note content
     change_content_result = notes.change_note_content(
-        "title_2", "Updated content for title_2."
+        title="title_2", new_content="Updated content for title_2."
     )
     print(change_content_result)
 
     # Test change content for non-existing note
     change_content_nonexistent_result = notes.change_note_content(
-        "nonexistent title", "New content."
+        title="nonexistent title", new_content="New content."
     )
     print(change_content_nonexistent_result)
 
     # Test change note title with existing new title
     change_title_existing_result = notes.change_note_title(
-        "title_3", "title_2"
+        title="title_3", new_title="title_2"
     )
     print(change_title_existing_result)
 
     # Test change note title with non-existing new title
-    change_title_result = notes.change_note_title("title_2", "new_title_2")
+    change_title_result = notes.change_note_title(
+        title="title_2", new_title="new_title_2"
+    )
     print(change_title_result)
 
     # Show all notes after changing title
-    all_notes_after_change_title = notes.show_all()
+    all_notes_after_change_title = notes.show_all_notes()
     print(all_notes_after_change_title)
 
     # Sort by default (ASC by title)
-    search_result_default = notes.search_note("titl")
+    search_result_default = notes.search_note(query="titl")
     print(search_result_default)
 
     # Sort by DESC title
     search_result_desc_title = notes.search_note(
-        "titl", sort_desc=True, sort_by="title_desc"
+        query="titl", sort_desc=True, sort_by="title_desc"
     )
     print(search_result_desc_title)
 
     # Sort by ASC number of existing tags (many to low)
     search_result_asc_tags_count = notes.search_note(
-        "titl", sort_by="tag_count_asc"
+        query="titl", sort_by="tag_count_asc"
     )
     print(search_result_asc_tags_count)
 
     # Sort by DESC number of existing tags (low to many)
     search_result_desc_tags_count = notes.search_note(
-        "titl", sort_desc=True, sort_by="tag_count_desc"
+        query="titl", sort_desc=True, sort_by="tag_count_desc"
     )
     print(search_result_desc_tags_count)
 
     # Show all notes
-    all_notes = notes.show_all()
+    all_notes = notes.show_all_notes()
     print(all_notes)
 
     # Test search by title
-    search_result_by_title = notes.search_note("title_2")
+    search_result_by_title = notes.search_note(query="title_2")
     print(search_result_by_title)
 
     # Test search by tag
-    search_result_by_tag = notes.search_note("tag_3")
+    search_result_by_tag = notes.search_note(query="tag_3")
     print(search_result_by_tag)
 
     # Test search by nonexistent data
-    search_result_by_nonexistent = notes.search_note("nonexistent")
+    search_result_by_nonexistent = notes.search_note(query="nonexistent")
     print(search_result_by_nonexistent)
 
     # Delete notes (testing)
-    delete_rec1 = notes.delete_note("title_1")
+    delete_rec1 = notes.delete_note(title="title_1")
     print(delete_rec1)
 
-    delete_rec3 = notes.delete_note("nonexistent title")
+    delete_rec3 = notes.delete_note(title="nonexistent title")
     print(delete_rec3)
 
     # Show all notes
-    all_notes = notes.show_all()
+    all_notes = notes.show_all_notes()
     print(all_notes)
 
     # Test add tags by title
     add_tags_result = notes.add_tags_by_title(
-        "title_2", ["new_tag_1", "new_tag_2", "tag_1+"]
+        title="title_2", tags=["new_tag_1", "new_tag_2", "tag_1+"]
     )
     print(add_tags_result)
 
     add_tags_result2 = notes.add_tags_by_title(
-        "title_3", ["second_add_tag_new"]
+        title="title_3", tags=["second_add_tag_new"]
     )
     print(add_tags_result2)
 
     add_tags_nonexistent = notes.add_tags_by_title(
-        "nonexistent", ["tag_should_not_exist"]
+        title="nonexistent", tags=["tag_should_not_exist"]
     )
     print(add_tags_nonexistent)
 
     # Show all notes after adding tags
-    all_notes_after_adding_tags = notes.show_all()
+    all_notes_after_adding_tags = notes.show_all_notes()
     print(all_notes_after_adding_tags)
