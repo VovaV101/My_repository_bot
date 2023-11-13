@@ -1,6 +1,6 @@
 from datetime import datetime, date, time
 
-from src.field import Field
+from bot_helper.bot_helper.field import Field
 
 DATE_FORMAT = "%d-%m-%Y"
 

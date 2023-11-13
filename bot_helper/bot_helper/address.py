@@ -1,9 +1,7 @@
-import json
+from bot_helper.bot_helper.field import Field
 
-from src.field import Field
 
 class Address(Field):
-
     """
     This class is a derived class from Field and needed for storing address of the client.
     """
@@ -37,9 +35,9 @@ class Address(Field):
         :return: Address as a dictionary.
         """
         return {
-                "country": self.country,
-                "city": self.city,
-                "street": self.street,
-                "house": self.house,
-                "apartment": self.apartment
+            "country": self.country,
+            "city": self.city,
+            "street": self.street,
+            "house": self.house,
+            "apartment": self.apartment
         }

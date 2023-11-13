@@ -2,12 +2,12 @@ from typing import Tuple, List
 
 from prompt_toolkit import prompt
 
-from src.address_book import AddressBook
-from src.birthday import Birthday
-from src.record import RecordAlreadyExistsException, Record
-from src.save_data.save_on_disk import SaveAddressBookOnDisk
-from src.utils.command_prompts import get_nested_completer
-from src.utils.format_str import FormatStr
+from bot_helper.bot_helper.address_book import AddressBook
+from bot_helper.bot_helper.birthday import Birthday
+from bot_helper.bot_helper.record import RecordAlreadyExistsException, Record
+from bot_helper.bot_helper.save_data.save_on_disk import SaveAddressBookOnDisk
+from bot_helper.bot_helper.utils.command_prompts import get_nested_completer
+from bot_helper.bot_helper.utils.format_str import FormatStr
 
 records = dict()
 contacts = AddressBook(data_save_tool=SaveAddressBookOnDisk(address="address_book.json"))
