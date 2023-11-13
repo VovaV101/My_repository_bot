@@ -10,11 +10,26 @@ def get_nested_completer() -> NestedCompleter:
     return NestedCompleter.from_nested_dict({
         "help": None,
         "hello": None,
-        "delete": None,
-        "change": None,
+        "delete": {
+            "contact": None,
+            "note": None,
+        },
+        "change": {
+            "contact": None,
+            "note's": {
+                "title": None,
+                "content": None,
+            },
+        },
         "update": {"birthday": None},
         "phone": None,
-        "show": {"all": None, "days to birthday": None},
+        "show": {
+            "all": {
+                "contacts": None,
+                "notes": None,
+            },
+            "days to birthday": None,
+        },
         "good bye": None,
         "close": None,
         "exit": None,
@@ -22,9 +37,14 @@ def get_nested_completer() -> NestedCompleter:
             "contact": None,
             "phone": None,
             "email": None,
-            "address": None
+            "address": None,
+            "note": None,
+            "tags": None,
         },
-        "search": None,
-        "upcoming birthdays": None
+        "search": {
+            "contact": None,
+            "note": None,
+        },
+        "upcoming birthdays": None,
     })
 

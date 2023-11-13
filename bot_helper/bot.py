@@ -4,6 +4,7 @@ from prompt_toolkit import prompt
 
 from bot_helper.bot_helper.address_book import AddressBook
 from bot_helper.bot_helper.birthday import Birthday
+from bot_helper.bot_helper.notes.note_book import NotesBook
 from bot_helper.bot_helper.record import RecordAlreadyExistsException, Record
 from bot_helper.bot_helper.save_data.save_on_disk import SaveAddressBookOnDisk
 from bot_helper.bot_helper.utils.command_prompts import get_nested_completer
@@ -11,6 +12,9 @@ from bot_helper.bot_helper.utils.format_str import FormatStr
 
 records = dict()
 contacts = AddressBook(data_save_tool=SaveAddressBookOnDisk(address="address_book.json"))
+notes = NotesBook(
+    data_save_tool=SaveAddressBookOnDisk(address="notes_data.json")
+)
 
 
 def input_error(func: callable) -> callable:
@@ -338,20 +342,27 @@ COMMANDS = {
     "help": help_command,
     "hello": hello,
     "add contact": add_contact,
-    "delete": delete_contact,
+    "delete contact": delete_contact,
     "change": change_phone,
     "update birthday": update_birthday,
     "phone": find_contact_phone,
-    "show all": show_all,
+    "show all contacts": show_all,
     "good bye": good_bye,
     "close": good_bye,
     "exit": good_bye,
     "show days to birthday": show_days_to_birthday,
-    "search": search_contact,
+    "search contact": search_contact,
     "add phone": add_phone,
     "add address": add_address,
     "add email": add_email,
     "upcoming birthdays": upcoming_birthdays,
+    "add note": notes.add_note,
+    "delete note": notes.delete_note,
+    "show all notes": notes.show_all_notes,
+    "search note": notes.search_note,
+    "add tags": notes.add_tags_by_title,
+    "change note's title": notes.change_note_title,
+    "change note's content": notes.change_note_content,
 }
 
 
