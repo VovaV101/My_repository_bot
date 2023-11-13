@@ -102,16 +102,31 @@ class AddressBook(UserDict):
 
     def search_contact(self, search_phrase: str) -> Generator:
         """
-        Method searches info about contact by name or phone using approximate equality.
+        The method looks up contact information by name, phone number, birthday, 
+        email address, or address using approximate equality.
         :param search_phrase: The phrase which is used for the searching contacts in the
         Address Book.
         """
         address_book: dict = self.data_save_tool.read_info(
             path=self.data_save_tool.address)
         for contact_name, contact_info in address_book.items():
+            print
             found_phones = list(filter(lambda phone: search_phrase in phone,
                                        contact_info["phones"]))
-            if any([search_phrase.lower() in contact_name.lower(), found_phones]):
+            found_emails = list(filter(lambda email: search_phrase in email,
+                                       contact_info["emails"]))
+            found_address = [address for address in contact_info["address"].values() if address]
+            found_address = list(filter(lambda address: search_phrase in address,
+                                       found_address))
+            if any(
+                [
+                    search_phrase.lower() in contact_name.lower(),
+                    found_phones,
+                    search_phrase in contact_info["birthday"],
+                    found_emails,
+                    found_address
+                    ]
+                    ):
                 yield {"name": contact_name, "info": contact_info}
 
     def delete(self, name: str) -> None:
