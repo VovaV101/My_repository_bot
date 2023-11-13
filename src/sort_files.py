@@ -4,9 +4,14 @@ import sys
 from pathlib import Path
 import shutil
 from transliterate import translit
+from typing import Union
 
 class FileOrganizer:
-    def __init__(self, root_dir):
+    def __init__(self, root_dir: Union[str, Path]):
+        """
+        Ініціалізує об'єкт FileOrganizer з вказаною кореневою директорією.
+        :param root_dir: Шлях до кореневої директорії для організації файлів.
+        """
         self.root_dir = Path(root_dir)
         self.categories = {
             "Audio": [".mp3", ".wav", ".ogg", ".amr"],
@@ -16,20 +21,35 @@ class FileOrganizer:
             "Archives": [".zip", ".gz", ".tar", ".rar"]
         }
 
-    def normalize(self, text):
+    def normalize(self, text: str) -> str:
+        """
+        Транслітерує текст, замінює спеціальні символи на '_', та конвертує в нижній регістр.
+        :param text: Текст для нормалізації.
+        :return: Нормалізований текст.
+        """
         transliterated_text = translit(text, 'uk', reversed=True)
         normalized_text = re.sub(r'[^a-zA-Z0-9]', '_', transliterated_text)
         normalized_text = normalized_text.lower()
         return normalized_text
 
-    def get_category(self, file):
+    def get_category(self, file: Path) -> str:
+        """
+        Визначає категорію файлу на основі його розширення.
+        :param file: Об'єкт Path файлу.
+        :return: Категорія файлу.
+        """
         ext = file.suffix.lower()
         for cat, exts in self.categories.items():
             if ext in exts:
                 return cat
         return "Other"
 
-    def move_file(self, file, category):
+    def move_file(self, file: Path, category: str) -> None:
+        """
+        Переміщує файл до відповідної категорії у кореневій директорії.
+        :param file: Об'єкт Path файлу.
+        :param category: Категорія, до якої слід перемістити файл.
+        """
         target_dir = self.root_dir.joinpath(category)
         if not target_dir.exists():
             target_dir.mkdir()
@@ -38,7 +58,11 @@ class FileOrganizer:
         if not new_path.exists():
             file.replace(new_path)
 
-    def remove_empty_folders(self, root_path=None):
+    def remove_empty_folders(self, root_path: Union[None, Path] = None) -> None:
+        """
+        Видаляє порожні піддиректорії.
+        :param root_path: Коренева директорія, з якої почати видалення.
+        """
         if root_path is None:
             root_path = self.root_dir
 
@@ -48,7 +72,10 @@ class FileOrganizer:
                 if not list(folder_path.iterdir()):
                     folder_path.rmdir()
 
-    def extract_and_move_archives(self):
+    def extract_and_move_archives(self) -> None:
+        """
+        Розпаковує архіви та переміщує їхні вміст у відповідні категорії.
+        """
         archive_dir = self.root_dir / "Archives"
         for archive_path in self.root_dir.glob("**/*.*"):
             try:
@@ -67,20 +94,26 @@ class FileOrganizer:
                 print(f"Error extracting {archive_path}: {e}")
                 print(f"Skipping file: {archive_path}")
 
-    def organize_files(self):
+    def organize_files(self) -> None:
+        """
+        Організує файли у відповідні категорії в кореневій директорії.
+        """
         for element in self.root_dir.glob("**/*"):
             if element.is_file():
                 category = self.get_category(element)
                 self.move_file(element, category)
 
-    def organize(self):
+    def organize(self) -> None:
+        """
+        Виконує повний процес організації файлів.
+        """
         self.organize_files()
         self.extract_and_move_archives()
         self.remove_empty_folders()
         print("All ok")
 
 
-def main():
+def main() -> None:
     try:
         if len(sys.argv) < 2:
             raise IndexError("No path to folder")
