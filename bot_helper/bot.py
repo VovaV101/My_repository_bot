@@ -400,8 +400,8 @@ def add_note(*args):
         return "There is lack of parameters for 'add note' command." \
                "Check details with command 'help'."
     title = args[0]
-    content = args[1]
-    tags = list(args[2:])
+    content = " ".join(list(filter(lambda x: not x.startswith("#"), args[1:])))
+    tags = list(filter(lambda x: x.startswith("#"), args))
     return notes.add_note(title=title, content=content, tags=tags)
 
 
@@ -450,7 +450,7 @@ def add_tags_by_title(*args):
         return "There is lack of parameters for 'add tags' command. " \
                "Check details with command 'help'."
     title = args[0]
-    tags = list(args[1:])
+    tags = list(filter(lambda x: x.startswith("#"), args))
     return notes.add_tags_by_title(title=title, tags=tags)
 
 
@@ -486,34 +486,84 @@ def help_command() -> str:
     """
     Method that returns instructions for the bot commands.
     :return: String with instructions for the bot commands.
-    TODO: rewrite method with all commands when they all will be implemented
     """
     return """List of supported commands:\n
            1 - 'hello' to greet the bot;\n
-           2 - 'add' to add a contact, e.g. 'add John 380995057766';\n
-           or 'add John 380995057766 30-05-1967';\n
-           3 - 'change' to change an existing contact's phone,\n
-           e.g. 'change John 380995051919 1234567890';\n
-           4 - 'phone' to see a contact, e.g. 'phone John';\n
-           5 - 'show all' to show all contacts which were add during the 
-           session with the bot:\n
-           6 - 'good bye', 'close' or 'exit' to stop the bot;\n
-           7 - 'search na' or 'search 123' to search in the address book 
-           by any match in name or phone;\n
-           8 - 'delete john' to remove a whole contact by name.\n
-           9 - 'help' to see description and supported commands.\n\n
-           Each command, name or phone should be separated by a 
-           space like ' '.
-           Each command should be entered in order like 'command name 
+           2 - 'add contact' to add a contact, e.g. 'add contact John 380995057766' \n
+           or 'add contact John 380995057766 30-05-1967';\n
+           3 - 'delete contact' to delete contact by name, e.g. 'delete contact John';\n
+           4 - 'change phone' to change an existing contact's phone,\n
+           e.g. 'change phone John 380995051919 1234567890';\n
+           5 - 'change birthday' to change/set up birthday for the contact, e.g. \n
+           'change birthday John 24-11-1992'; \n
+           6 - 'phone' to see a contact, e.g. 'phone John';\n
+           7 - 'show all contacts' to show all contacts which were added to the file;\n
+           8 - 'show days to birthday' to show the number of days to birthday for the \n
+           the specific contact, e.g. 'show days to birthday John'; \n
+           9 - 'good bye', 'close' or 'exit' to stop the bot;\n
+           10 - 'search contact' to search in the address book by any match in \n
+           the name, phone, birthday, email or address;\n
+           11 - 'add phone' to add phone to the existing contact, e.g. 'add phone \n
+           0983294154' \n
+           12 - 'add address' to add the address (all parameters after the name is \n
+           optional and should be passed via comma and space) to the existing \n
+           contact, e.g. 'add address John Ukraine, Kyiv, Kharkivska highway, 10'; \n
+           13 - 'add email' to add an email (email value follow the general rules) to \n
+           the existing contact, e.g. 'add email John hello@test.com'; \n
+           14 - 'upcoming birthdays' to show the upcoming birthdays among the contacts \n
+           stored in the address book whose birthday is a specified number of days \n
+           from the current date, e.g. 'upcoming birthdays 30'; \n 
+           15 - 'change email' to change an email from old one to the new one for the \n
+           existing contact, e.g. 'change email John old_email@test.com 
+           new_email@test.com'; \n
+           16 - 'change address' to change the address for the existing contact; an \n
+           address can be changed by address key (country, city, street, house, \n
+           apartment), e.g. 'change address John city Kyiv' and the whole address by \n
+           passed parameters, e.g. 'change address John Poland, Warsaw, Central St.'; \n
+           17 - 'change name' to change the name of the existing contact with a \n
+           storing all contact data, e.g. 'change name John NewJohn'; \n
+           18 - 'sort files' to sort files by file's types and passed path to the \n
+           folder with files, e.g. 'sort files path/to/the/folder/to/sort'; \n
+           19 - 'help' to see description and supported commands.\n
+           Each command, name or phone should be separated by a \n
+           space like ' '. Address values should be separated with a comma and a space \n
+           ', '. Each command should be entered in order like 'command name \n
            phone'.\n
            Each contact's name has to be unique.\n
            Each contact's name should be entered like a single word, if\n
            desired name is first name and last name, separate them with\n
            underscore, e.g. John_Wick.\n
-           You can add only one phone to the name.\n
-           Purpose of the bot to create, modify and save contacts during\n
-           a single session. All data will be deleted after exit from the\n
-           session."""
+           You can add a few phones and emails and only one birthday and one address \n
+           to the name.\n
+           Purpose of the bot to create, modify and save contacts, notes, tags, \n
+           sort files. The data is not lost after the exiting from the bot.\n
+           
+           Notes:
+           ---
+           General rules:
+           A) Title should not include spaces, if multiple words are desired\n
+           - separate words with symbols like underscore;
+           B) Tags starts with # and should not include spaces.
+           C) Query for search should not include spaces.
+
+           ---
+           20 - 'add note' to add a customer's note, e.g. 'add note Title \n
+           Content content content #tag #tag #tag'\n
+           (tags are optional).\n
+           21 - 'delete note' to delete a customer's note, e.g. \n
+           'delete Products'.\n
+           22 - 'show all notes' to see all notes which are exists.\n
+           23 - 'add tags' to add tags to a specific note with specified\n
+           title, e.g. 'add tags #tag1 #tag2'.
+           24 - 'change note's title' to change title of existing note, e.g.\n
+           'change note's title OLD_TITLE NEW_TITLE'.
+           25 - 'change note's content' to change a content of existing note\n
+           e.g. 'change note's content TITLE NEW_CONTENT'.
+           26 - 'search note' to search note by a query, e.g.\n
+           'search note Prod' to find by partly or full match with some\n
+           existing title or tag.
+
+           """
 
 
 @input_error

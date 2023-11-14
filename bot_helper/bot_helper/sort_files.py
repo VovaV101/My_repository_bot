@@ -94,6 +94,8 @@ class FileOrganizer:
             except (shutil.ReadError, rarfile.Error) as e:
                 print(f"Error extracting {archive_path}: {e}")
                 print(f"Skipping file: {archive_path}")
+            except FileNotFoundError as e:
+                print(f"Error: {e}")
 
     def organize_files(self) -> None:
         """
