@@ -1,9 +1,10 @@
 from typing import Tuple, List
 
+from bot_helper.bot_helper.address import Address, ADDRESS_KEY_LIST
 from prompt_toolkit import prompt
 
 from bot_helper.bot_helper.address_book import AddressBook
-from bot_helper.bot_helper.birthday import Birthday
+from bot_helper.bot_helper.birthday import Birthday, DATE_FORMAT
 from bot_helper.bot_helper.notes.note_book import NotesBook
 from bot_helper.bot_helper.record import RecordAlreadyExistsException, Record
 from bot_helper.bot_helper.save_data.save_on_disk import SaveAddressBookOnDisk
@@ -246,6 +247,89 @@ def add_email(*args):
 
 
 @input_error
+def change_email(*args) -> str:
+    """
+    Method that changes user contacts in the Address Book if such user exists.
+    :param args: Username and email that should be stored.
+    :return: String with an information about changing email.
+    """
+    name = args[0]
+    old_email = args[1]
+    new_email = args[2]
+    rec = contacts.find(name)
+    if rec:
+        rec.edit_email(old_email=old_email, new_email=new_email)
+        contacts.update_record(rec)
+        return f"Email for contact '{rec.name.value}' has been successfully " \
+               f"changed from '{old_email}' to '{new_email}'"
+    else:
+        raise ValueError(f"The contact with the name '{name}' doesn't exist in the "
+                         f"Address Book. Add it first, please.")
+
+@input_error
+def change_address(*args) -> str:
+    """
+    Method that changes user contacts in the Address Book if such user exists.
+    :param args: Username and address that should be stored.
+    :return: String with an information about changing adress.
+    """
+    name = args[0]
+    new_address = [add.replace(",", "") for add in args[1:]]
+    rec = contacts.find(name)
+    if rec:
+        DICT_ADDRESS = {
+            "country": rec.address.country,
+            "city": rec.address.city,
+            "street": rec.address.street,
+            "house": rec.address.house,
+            "apartment": rec.address.apartment
+        }
+
+        old_address = rec.address
+        rec_address = old_address.value.copy()
+
+        if rec.address.get_addr_dict() == Address(new_address).get_addr_dict():
+            return f"New address value for the user '{rec.name.value}' is equal to " \
+                   f"the previous value"
+        if new_address[0] in ADDRESS_KEY_LIST:
+            rec_address[DICT_ADDRESS[new_address[0]]] = new_address[1]
+            rec_address = [addr for addr in rec_address.values()]
+            rec.add_address(rec_address)
+            contacts.update_record(rec)
+            return f"{new_address[0].capitalize()} for contact '{rec.name.value}' has " \
+                   f"been successfully changed from " \
+                   f"'{old_address.value[DICT_ADDRESS[new_address[0]]]}' " \
+                   f"to '{new_address[1]}'"
+
+        rec.add_address(address=new_address)
+        contacts.update_record(rec)
+        return f"Address for contact '{rec.name.value}' has been successfully " \
+               f"changed from {old_address.value} to {rec.address.value}"
+    else:
+        raise ValueError(f"The contact with the name '{name}' doesn't exist in the "
+                         f"Address Book. Add it first, please.")
+
+@input_error
+def change_name(*args) -> str:
+    """
+    Method that changes user contacts in the Address Book if such user exists.
+    :param args: The old and new username that should be stored.
+    :return: String with an information about changing name.
+    """
+    name = args[0]
+    new_name = args[1]
+    rec = contacts.find(name)
+    if rec:
+        rec.name.value = new_name
+        contacts.delete(name)
+        contacts.add_record(rec)
+        return f"Name for contact '{name}' has been successfully" \
+               f"changed from '{name}' to '{new_name}'"
+    else:
+        raise ValueError(f"The contact with the name '{name}' doesn't exist in the "
+                         f"Address Book. Add it first, please.")
+
+@input_error
 def good_bye() -> str:
     """
     Method that returns "Good bye!" string.
@@ -340,8 +424,8 @@ COMMANDS = {
     "hello": hello,
     "add contact": add_contact,
     "delete contact": delete_contact,
-    "change": change_phone,
-    "update birthday": update_birthday,
+    "change phone": change_phone,
+    "change birthday": update_birthday,
     "phone": find_contact_phone,
     "show all contacts": show_all,
     "good bye": good_bye,
@@ -360,6 +444,9 @@ COMMANDS = {
     "add tags": notes.add_tags_by_title,
     "change note's title": notes.change_note_title,
     "change note's content": notes.change_note_content,
+    "change email": change_email,
+    "change address": change_address,
+    "change name": change_name,
 }
 
 

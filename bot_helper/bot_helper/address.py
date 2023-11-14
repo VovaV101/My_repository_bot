@@ -1,5 +1,7 @@
 from bot_helper.bot_helper.field import Field
 
+ADDRESS_KEY_LIST = ["country", "city", "street", "house", "apartment"]
+
 
 class Address(Field):
     """

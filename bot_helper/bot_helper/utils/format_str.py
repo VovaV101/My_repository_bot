@@ -6,8 +6,6 @@ class FormatStr:
     Class for formatting text output in bot module.
     """
 
-    ADDRESS_KEY_LIST = ["country", "city", "street", "house", "apartment"]
-
     @staticmethod
     def get_formatted_headers() -> str:
         """
