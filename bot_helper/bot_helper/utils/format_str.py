@@ -1,5 +1,7 @@
 from typing import Generator
 
+from bot_helper.bot_helper.address import ADDRESS_KEY_LIST
+
 
 class FormatStr:
     """
@@ -69,8 +71,8 @@ class FormatStr:
                                                         phones_list[indx],
                                                         "",
                                                         emails_list[indx],
-                                                        f"{FormatStr.ADDRESS_KEY_LIST[indx]}:",
-                                                        str(address_dic[FormatStr.ADDRESS_KEY_LIST[indx]])
+                                                        f"{ADDRESS_KEY_LIST[indx]}:",
+                                                        str(address_dic[ADDRESS_KEY_LIST[indx]])
                                                         )
                 counter += 1
                 s += "{:-<64}+++{:->64}\n".format("", "")
