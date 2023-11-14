@@ -97,6 +97,18 @@ class Record:
             if phone.value == phone_num:
                 return phone, idx
         return None, None
+ 
+    def get_email_by_number(self, email_num: str) -> Tuple[Any, int] | Tuple[None, None]:
+        """
+        Method iterates through the list of email objects and returns the object that
+        has 'phone_num' as a email value.
+        :param phone_num: Email number string.
+        :return: Email object and it's index in the list.
+        """
+        for idx, email in enumerate(self.phones):
+            if email.value == email_num:
+                return email, idx
+        return None, None
 
     def add_phone(self, phone_num: str) -> str:
         """
@@ -123,6 +135,20 @@ class Record:
             raise ValueError(
                 f"Phone with the number '{old_phone}' was not found for the "
                 f"user '{self.name.value}'")
+  
+    def edit_email(self, old_email: str, new_email: str) -> None:
+        """
+        Method founds the email number in a list of other client's emails and edits it if the number was found.
+        :param old_phone: The email that must be changed.
+        :param new_phone: The new email number.
+        :return: None.
+        """
+        found_email, idx = self.get_email_by_number(phone_num=old_email)
+        if found_email:
+            self.emails[idx].value = new_email
+        else:
+            raise ValueError(
+                f"Email '{old_email}' was not found for the user '{self.name.value}'")
 
     def remove_phone(self, phone_num: str) -> None:
         """
