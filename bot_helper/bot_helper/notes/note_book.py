@@ -119,6 +119,9 @@ class NotesBook:
         existing_data = self.data_save_tool.read_info(
             path=self.data_save_tool.address
         )
+        if not existing_data:
+            return "Notes book is empty. " \
+                   "Should be at least one note to display."
 
         notes_list = []
         for idx, note_data in enumerate(existing_data.get("notes", []),
@@ -143,14 +146,20 @@ class NotesBook:
         return f"\nAll Notes:\n{formatted_table}\n"
 
     @staticmethod
-    def _sort_notes(*, data: list, sort_key: str, reverse: bool) -> list | str:
+    def _sort_notes(
+            *, data: list, sort_key: str, reverse: bool = False
+    ) -> list | str:
         """
         Sort a list of notes based on the specified key and order.
         :param data: The list of notes to be sorted.
         :param sort_key: The key by which to sort the notes.
-        :param reverse: A boolean indicating whether to sort in descending order.
-        :return: A sorted list of notes or an error message if the sort key is invalid.
+        :param reverse: A boolean indicating whether to sort in descending
+        order.
+        :return: A sorted list of notes or an error message if the sort key is
+        invalid.
         """
+        if "desc" in sort_key:
+            reverse = True
         sort_keys = {
             'title_asc': lambda note: note[0],
             'title_desc': lambda note: note[0],
@@ -167,14 +176,13 @@ class NotesBook:
 
     def search_note(
             self, *, query: str, sort_by: str = 'title_asc',
-            sort_desc: bool = False
     ) -> str:
         """
         Search for notes based on the specified query and sorting parameters.
-        :param query: The search query.
-        :param sort_by: The key by which to sort the search results.
+        :param query: The search query. Param should not include spaces.
         :param sort_desc: A boolean indicating whether to sort in descending
         order.
+        :param sort_by: The key by which to sort the search results.
         :return: A formatted string containing the search results.
         """
         existing_data = self._read_existing_data()
@@ -197,7 +205,7 @@ class NotesBook:
         if found_notes:
             # Sort the notes
             sorted_notes = self._sort_notes(
-                data=found_notes, sort_key=sort_by, reverse=sort_desc
+                data=found_notes, sort_key=sort_by
             )
             # Return error text if notes were not found
             if isinstance(sorted_notes, str):
@@ -212,8 +220,7 @@ class NotesBook:
                 numalign="center"
             )
             return f"Search Result by {tag_description} (Sorted by " \
-                   f"{sort_by}{' in descending order' if sort_desc else ''}" \
-                   f"):\n{formatted_table}\n"
+                   f"{sort_by}):\n{formatted_table}\n"
         else:
             return f"\nNotes were not found by {tag_description}.\n"
 
@@ -322,6 +329,8 @@ if __name__ == '__main__':
         data_save_tool=SaveAddressBookOnDisk(address="notes_data.json")
     )
 
+    print(notes.show_all_notes())
+
     # Add notes
     rec1 = notes.add_note(
         title="title_1",
@@ -375,7 +384,7 @@ if __name__ == '__main__':
 
     # Sort by DESC title
     search_result_desc_title = notes.search_note(
-        query="titl", sort_desc=True, sort_by="title_desc"
+        query="titl", sort_by="title_desc"
     )
     print(search_result_desc_title)
 
@@ -387,7 +396,7 @@ if __name__ == '__main__':
 
     # Sort by DESC number of existing tags (low to many)
     search_result_desc_tags_count = notes.search_note(
-        query="titl", sort_desc=True, sort_by="tag_count_desc"
+        query="titl", sort_by="tag_count_desc"
     )
     print(search_result_desc_tags_count)
 

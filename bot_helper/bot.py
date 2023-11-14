@@ -329,6 +329,7 @@ def change_name(*args) -> str:
         raise ValueError(f"The contact with the name '{name}' doesn't exist in the "
                          f"Address Book. Add it first, please.")
 
+
 @input_error
 def good_bye() -> str:
     """
@@ -385,6 +386,98 @@ def unknown() -> str:
     return "Unknown command. Try again."
 
 
+def add_note(*args):
+    """
+    Method that adds a note.
+    :param args: Input parameters (title, content, tags).
+    :return: String indicating successful addition of a note.
+    """
+    if len(args) < 2:
+        return "There is lack of parameters for 'add note' command." \
+               "Check details with command 'help'."
+    title = args[0]
+    content = args[1]
+    tags = list(args[2:])
+    return notes.add_note(title=title, content=content, tags=tags)
+
+
+def delete_note(*args):
+    """
+    Method that deletes a note.
+    :param args: Input parameters (title).
+    :return: String indicating successful deletion of a note.
+    """
+    if len(args) < 1:
+        return "There is lack of parameters for 'delete note' command. " \
+               "Check details with command 'help'."
+    title = args[0]
+    return notes.delete_note(title=title)
+
+
+def show_all_notes() -> str:
+    """
+    Method that shows all notes.
+    :return: String representing all available notes.
+    """
+    return notes.show_all_notes()
+
+
+def search_note(*args):
+    """
+    Method that searches for a note.
+    :param args: Input parameters (query, sort_by).
+    :return: String representing the search result for a note.
+    """
+    if len(args) < 2:
+        return "There is lack of parameters for 'search note' command. " \
+               "Check details with command 'help'."
+    query = args[1]
+    sort_by = args[2]
+    return notes.search_note(query=query, sort_by=sort_by)
+
+
+def add_tags_by_title(*args):
+    """
+    Method that adds tags to a note by its title.
+    :param args: Input parameters (title, tags).
+    :return: String indicating successful addition of tags to a note.
+    """
+    if len(args) < 2:
+        return "There is lack of parameters for 'add tags' command. " \
+               "Check details with command 'help'."
+    title = args[0]
+    tags = list(args[1:])
+    return notes.add_tags_by_title(title=title, tags=tags)
+
+
+def change_note_title(*args):
+    """
+    Method that changes the title of a note.
+    :param args: Input parameters (title, new_title).
+    :return: String indicating successful title change of a note.
+    """
+    if len(args) < 2:
+        return "There is lack of parameters for 'change note's title' " \
+               "command. Check details with command 'help'."
+    title = args[0]
+    new_title = args[1]
+    return notes.change_note_title(title=title, new_title=new_title)
+
+
+def change_note_content(*args):
+    """
+    Method that changes the content of a note.
+    :param args: Input parameters (title, new_content).
+    :return: String indicating successful content change of a note.
+    """
+    if len(args) < 2:
+        return "There is lack of parameters for 'change note's content' " \
+               "command. Check details with command 'help'."
+    title = args[0]
+    new_content = " ".join(list(args[1:]))
+    return notes.change_note_content(title=title, new_content=new_content)
+
+
 def help_command() -> str:
     """
     Method that returns instructions for the bot commands.
@@ -437,13 +530,13 @@ COMMANDS = {
     "add address": add_address,
     "add email": add_email,
     "upcoming birthdays": upcoming_birthdays,
-    "add note": notes.add_note,
-    "delete note": notes.delete_note,
-    "show all notes": notes.show_all_notes,
-    "search note": notes.search_note,
-    "add tags": notes.add_tags_by_title,
-    "change note's title": notes.change_note_title,
-    "change note's content": notes.change_note_content,
+    "add note": add_note,
+    "delete note": delete_note,
+    "show all notes": show_all_notes,
+    "search note": search_note,
+    "add tags": add_tags_by_title,
+    "change note's title": change_note_title,
+    "change note's content": change_note_content,
     "change email": change_email,
     "change address": change_address,
     "change name": change_name,
