@@ -101,11 +101,11 @@ class Record:
     def get_email_by_number(self, email_num: str) -> Tuple[Any, int] | Tuple[None, None]:
         """
         Method iterates through the list of email objects and returns the object that
-        has 'phone_num' as a email value.
-        :param phone_num: Email number string.
+        has 'email_num' as an email value.
+        :param email_num: Email number string.
         :return: Email object and it's index in the list.
         """
-        for idx, email in enumerate(self.phones):
+        for idx, email in enumerate(self.emails):
             if email.value == email_num:
                 return email, idx
         return None, None
@@ -139,11 +139,11 @@ class Record:
     def edit_email(self, old_email: str, new_email: str) -> None:
         """
         Method founds the email number in a list of other client's emails and edits it if the number was found.
-        :param old_phone: The email that must be changed.
-        :param new_phone: The new email number.
+        :param old_email: The email that must be changed.
+        :param new_email: The new email number.
         :return: None.
         """
-        found_email, idx = self.get_email_by_number(phone_num=old_email)
+        found_email, idx = self.get_email_by_number(email_num=old_email)
         if found_email:
             self.emails[idx].value = new_email
         else:

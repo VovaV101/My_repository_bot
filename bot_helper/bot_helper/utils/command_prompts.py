@@ -16,12 +16,16 @@ def get_nested_completer() -> NestedCompleter:
         },
         "change": {
             "contact": None,
+            "phone": None,
+            "email": None,
+            "address": None,
+            "name": None,
+            "birthday": None,
             "note's": {
                 "title": None,
                 "content": None,
             },
         },
-        "update": {"birthday": None},
         "phone": None,
         "show": {
             "all": {

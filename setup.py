@@ -11,6 +11,6 @@ setup(
     author_email='nat.tiutiunnyk@gmail.com',
     license='MIT',
     packages=find_namespace_packages(),
-    install_requires=['prompt_toolkit'],
+    install_requires=['prompt_toolkit', 'tabulate', 'pydantic'],
     entry_points={'console_scripts': ['bot-helper = bot_helper.bot:main']}
 )
