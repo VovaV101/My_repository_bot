@@ -50,5 +50,6 @@ def get_nested_completer() -> NestedCompleter:
             "note": None,
         },
         "upcoming birthdays": None,
+        "sort": {"files": None}
     })
 

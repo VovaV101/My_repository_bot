@@ -1,3 +1,4 @@
+from pathlib import Path
 from typing import Tuple, List
 
 from bot_helper.bot_helper.address import Address, ADDRESS_KEY_LIST
@@ -8,6 +9,7 @@ from bot_helper.bot_helper.birthday import Birthday, DATE_FORMAT
 from bot_helper.bot_helper.notes.note_book import NotesBook
 from bot_helper.bot_helper.record import RecordAlreadyExistsException, Record
 from bot_helper.bot_helper.save_data.save_on_disk import SaveAddressBookOnDisk
+from bot_helper.bot_helper.sort_files import FileOrganizer
 from bot_helper.bot_helper.utils.command_prompts import get_nested_completer
 from bot_helper.bot_helper.utils.format_str import FormatStr
 
@@ -35,6 +37,8 @@ def input_error(func: callable) -> callable:
         except IndexError as err:
             return f"Not all parameters have been passed. Check it, please."
         except RecordAlreadyExistsException as err:
+            return err
+        except FileNotFoundError as err:
             return err
 
     return wrapper
@@ -512,6 +516,23 @@ def help_command() -> str:
            session."""
 
 
+@input_error
+def sort_files(*args) -> str:
+    """
+    Method that sorts files based on user-defined paths.
+    :param args: List of user-defined paths for sorting files.
+    :return: String with information about the sorting process.
+    """
+    user_paths = args
+    if not user_paths:
+        raise ValueError("Please provide user-defined paths for sorting files.")
+    # Instantiate FileOrganizer with the provided user-defined paths
+    file_organizer = FileOrganizer(root_dir=Path(user_paths[0]))
+    # Call the organize method to start sorting
+    file_organizer.organize()
+    return f"Files have been successfully sorted based on user-defined paths: {user_paths}"
+
+
 COMMANDS = {
     "help": help_command,
     "hello": hello,
@@ -540,6 +561,7 @@ COMMANDS = {
     "change email": change_email,
     "change address": change_address,
     "change name": change_name,
+    "sort files": sort_files,
 }
 
 
