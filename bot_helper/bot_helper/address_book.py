@@ -110,19 +110,20 @@ class AddressBook(UserDict):
         address_book: dict = self.data_save_tool.read_info(
             path=self.data_save_tool.address)
         for contact_name, contact_info in address_book.items():
-            print
             found_phones = list(filter(lambda phone: search_phrase in phone,
                                        contact_info["phones"]))
             found_emails = list(filter(lambda email: search_phrase in email,
                                        contact_info["emails"]))
             found_address = [address for address in contact_info["address"].values() if address]
             found_address = list(filter(lambda address: search_phrase in address,
-                                       found_address))
+                                        found_address))
+            found_birthday = search_phrase in contact_info.get("birthday") if \
+                contact_info.get("birthday") else False
             if any(
                 [
                     search_phrase.lower() in contact_name.lower(),
                     found_phones,
-                    search_phrase in contact_info["birthday"],
+                    found_birthday,
                     found_emails,
                     found_address
                     ]

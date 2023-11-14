@@ -125,13 +125,14 @@ def update_birthday(*args) -> str:
     new_birthday = args[1]
     rec = contacts.find(name)
     if rec:
+        old_birthday = rec.birthday.value
         if rec.birthday.value == Birthday(new_birthday).value:
             return f"New birthday value for the user '{rec.name.value}' is equal to " \
                    f"the previous value"
         rec.add_birthday(birthday=new_birthday)
         contacts.update_record(rec)
         return f"Birthday for contact '{rec.name.value}' has been successfully " \
-               f"changed from '{rec.birthday.value}' to '{new_birthday}'"
+               f"changed from '{old_birthday}' to '{new_birthday}'"
     else:
         raise ValueError(f"The contact with the name '{name}' doesn't exist in the "
                          f"Address Book. Add it first, please.")
@@ -157,7 +158,8 @@ def find_contact_phone(*args) -> str:
 @input_error
 def show_all(*args) -> str:
     """
-    Method that shows all users's phone numbers.
+    Method that shows all users's information from the Address Book: name, phone numbers,
+    address, email, birthday.
     :return: String with all phone numbers of all users.
     """
     record_num = None
@@ -167,26 +169,21 @@ def show_all(*args) -> str:
     return FormatStr.show_address_book(records)
 
 
-@input_error
 def search_contact(*args) -> str:
     """
-    Method that searches the full info about users by name and phone number and returns
-    info if a typed string is a part of user's name or phone.
+    Method that searches the full information about users by name, phone number, birthday,
+    email address, address and returns info if a typed string is a part of user's name
+    or phone.
     :return: String with all data of all found users.
     """
     search_phrase = args[0].strip()
     if len(search_phrase) < 2:
         raise ValueError("Searched phrase must have at least 2 symbols")
     records = contacts.search_contact(search_phrase=search_phrase)
-    counter = 1
-    searched_str = FormatStr.get_formatted_headers()
-    for record in records:
-        phones_str = ",".join([phone_num for phone_num in record["info"]["phones"]])
-        searched_str += '{:<10} | {:<20} | {:<70} |\n'.format(counter, record["name"],
-                                                              phones_str)
-        counter += 1
-    searched_str += "--------------------------+++-----------------------------------\n"
-    return searched_str
+    rec = []
+    for dic in [i for i in records]:
+        rec += [(dic["name"], dic["info"])]
+    return FormatStr.show_address_book([rec])
 
 
 @input_error
