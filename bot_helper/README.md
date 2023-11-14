@@ -25,7 +25,7 @@ Instructions how to install the console application 'bot-helper':
    ```bash 
    py -m pip install build
    ```
-   3. Inside the directory of the project run the command to build the application:
+3. Inside the directory of the project run the command to build the application:
    
    Unix/macOS: 
    ```bash 
