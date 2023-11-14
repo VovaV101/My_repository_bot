@@ -13,8 +13,14 @@ from bot_helper.bot_helper.email_address import Email
 
 class RecordAlreadyExistsException(Exception):
     """
-    Custom exception class for catching exceptions in case of the try to add a record
-    that already exists in the AddressBook.
+    A record which was operating already exists.
+    """
+    pass
+
+
+class RecordWasNotFoundException(Exception):
+    """
+    Record was not found during operation.
     """
     pass
 
