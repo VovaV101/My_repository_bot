@@ -102,7 +102,7 @@ class NotesBook:
              note.get("title") == title),
             None
         )
-        if index_to_remove:
+        if index_to_remove is not None:
             # Remove the note by the found index
             del existing_data["notes"][index_to_remove]
             self.data_save_tool.save_info(
@@ -119,7 +119,7 @@ class NotesBook:
         existing_data = self.data_save_tool.read_info(
             path=self.data_save_tool.address
         )
-        if not existing_data:
+        if not existing_data or not existing_data.get("notes"):
             return "Notes book is empty. " \
                    "Should be at least one note to display."
 
@@ -180,8 +180,6 @@ class NotesBook:
         """
         Search for notes based on the specified query and sorting parameters.
         :param query: The search query. Param should not include spaces.
-        :param sort_desc: A boolean indicating whether to sort in descending
-        order.
         :param sort_by: The key by which to sort the search results.
         :return: A formatted string containing the search results.
         """

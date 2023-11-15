@@ -435,8 +435,8 @@ def search_note(*args):
     if len(args) < 2:
         return "There is lack of parameters for 'search note' command. " \
                "Check details with command 'help'."
-    query = args[1]
-    sort_by = args[2]
+    query = args[0]
+    sort_by = args[1]
     return notes.search_note(query=query, sort_by=sort_by)
 
 

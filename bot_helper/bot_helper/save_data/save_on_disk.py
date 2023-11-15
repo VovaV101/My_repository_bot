@@ -33,4 +33,4 @@ class SaveAddressBookOnDisk(SaveBase):
         :param path: Path to file in which the data should be saved.
         """
         with open(path, mode="w") as fh:
-            json.dump(data, fh)
+            json.dump(data, fh, indent=2)
