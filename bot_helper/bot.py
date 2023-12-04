@@ -1,17 +1,34 @@
+from abc import ABC, abstractmethod
 from pathlib import Path
 from typing import Tuple, List
 
-from bot_helper.bot_helper.address import Address, ADDRESS_KEY_LIST
+from bot_helper.address import Address, ADDRESS_KEY_LIST
 from prompt_toolkit import prompt
 
-from bot_helper.bot_helper.address_book import AddressBook
-from bot_helper.bot_helper.birthday import Birthday, DATE_FORMAT
-from bot_helper.bot_helper.notes.note_book import NotesBook
-from bot_helper.bot_helper.record import RecordAlreadyExistsException, Record
-from bot_helper.bot_helper.save_data.save_on_disk import SaveAddressBookOnDisk
-from bot_helper.bot_helper.sort_files import FileOrganizer
-from bot_helper.bot_helper.utils.command_prompts import get_nested_completer
-from bot_helper.bot_helper.utils.format_str import FormatStr
+from bot_helper.address_book import AddressBook
+from bot_helper.birthday import Birthday, DATE_FORMAT
+from bot_helper.notes.note_book import NotesBook
+from bot_helper.record import RecordAlreadyExistsException, Record
+from bot_helper.save_data.save_on_disk import SaveAddressBookOnDisk
+from bot_helper.sort_files import FileOrganizer
+from bot_helper.utils.command_prompts import get_nested_completer
+from bot_helper.utils.format_str import FormatStr
+
+class UserInterface(ABC):
+    @abstractmethod
+    def prompt_user_input(self, message: str, completer=None, bottom_toolbar: str = "") -> str:
+        pass
+
+    @abstractmethod
+    def display_output(self, output: str) -> None:
+        pass
+
+class ConsoleUserInterface(UserInterface):
+    def prompt_user_input(self, message: str, completer=None, bottom_toolbar: str = "") -> str:
+        return prompt(message=message, completer=completer, bottom_toolbar=bottom_toolbar)
+
+    def display_output(self, output: str) -> None:
+        print(output)
 
 records = dict()
 contacts = AddressBook(data_save_tool=SaveAddressBookOnDisk(address="address_book.json"))
@@ -615,23 +632,21 @@ COMMANDS = {
 }
 
 
-def main() -> None:
-    """
-    Method is responsible for creating an endless loop where all additional function is
-    calling. The loop can be stopped by passing the appropriate commands (close, exit,
-    good bye).
-    :return: None.
-    """
+def main(user_interface: UserInterface) -> None:
     while True:
-        cli_input = prompt(message="Type a command>>> ",
-                           completer=get_nested_completer(),
-                           bottom_toolbar="Run 'help' command for getting additional "
-                                          "information about bot commands")
+        cli_input = user_interface.prompt_user_input(
+            message="Type a command>>> ",
+            completer=get_nested_completer(),
+            bottom_toolbar="Run 'help' command for getting additional information about bot commands"
+        )
+
         func_name, func, func_args = parse_cli_command(cli_input)
-        print(func(*func_args))
+        user_interface.display_output(func(*func_args))
+
         if func_name in ("good bye", "close", "exit"):
             break
 
 
 if __name__ == "__main__":
-    main()
+    console_ui = ConsoleUserInterface()
+    main(console_ui)

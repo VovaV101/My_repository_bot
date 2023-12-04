@@ -4,11 +4,11 @@ import json
 from datetime import datetime
 from typing import Tuple, Any
 
-from bot_helper.bot_helper.birthday import Birthday, DATE_FORMAT
-from bot_helper.bot_helper.name import Name
-from bot_helper.bot_helper.phone import Phone
-from bot_helper.bot_helper.address import Address
-from bot_helper.bot_helper.email_address import Email
+from bot_helper.birthday import Birthday, DATE_FORMAT
+from bot_helper.name import Name
+from bot_helper.phone import Phone
+from bot_helper.address import Address
+from bot_helper.email_address import Email
 
 
 class RecordAlreadyExistsException(Exception):

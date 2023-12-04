@@ -2,10 +2,10 @@ from typing import List
 
 from tabulate import tabulate
 
-from bot_helper.bot_helper.record import RecordAlreadyExistsException, \
+from bot_helper.record import RecordAlreadyExistsException, \
     RecordWasNotFoundException
-from bot_helper.bot_helper.save_data.save_on_disk import SaveAddressBookOnDisk
-from bot_helper.bot_helper.notes.notes_data_strcture \
+from bot_helper.save_data.save_on_disk import SaveAddressBookOnDisk
+from bot_helper.notes.notes_data_strcture \
     import build_dto_by_schema, Note
 
 
