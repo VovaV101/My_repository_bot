@@ -4,7 +4,9 @@ WORKDIR /app
 
 RUN pip install poetry
 
-COPY bot_helper/my_bot/ ./
+COPY bot_helper ./
+
 RUN poetry install --no-dev --no-interaction --no-ansi
 
-CMD ["python", "bot_helper/bot.py"]
+
+CMD ["poetry", "run", "bot_helper"]

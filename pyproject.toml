@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "bot-poetry"
+name = "bot-helper"
 version = "0.1.0"
 description = "Package for sorting files in a specific folder, adding data "
 authors = ["VovaV101 <vova0190@birmir.net>"]
