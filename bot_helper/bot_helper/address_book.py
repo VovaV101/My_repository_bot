@@ -5,8 +5,8 @@ import json
 from collections import UserDict
 from typing import Generator
 
-from bot_helper.bot_helper.save_data.save_base import SaveBase
-from bot_helper.bot_helper.record import Record, RecordAlreadyExistsException
+from bot_helper.save_data.save_base import SaveBase
+from bot_helper.record import Record, RecordAlreadyExistsException
 
 
 class AddressBook(UserDict):
