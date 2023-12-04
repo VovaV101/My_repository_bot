@@ -1,4 +1,4 @@
-from bot_helper.field import Field
+from .field import Field
 
 
 class Name(Field):

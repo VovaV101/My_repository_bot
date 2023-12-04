@@ -2,17 +2,17 @@ from abc import ABC, abstractmethod
 from pathlib import Path
 from typing import Tuple, List
 
-from bot_helper.address import Address, ADDRESS_KEY_LIST
+from .bot_helper.address import Address, ADDRESS_KEY_LIST
 from prompt_toolkit import prompt
 
-from bot_helper.address_book import AddressBook
-from bot_helper.birthday import Birthday, DATE_FORMAT
-from bot_helper.notes.note_book import NotesBook
-from bot_helper.record import RecordAlreadyExistsException, Record
-from bot_helper.save_data.save_on_disk import SaveAddressBookOnDisk
-from bot_helper.sort_files import FileOrganizer
-from bot_helper.utils.command_prompts import get_nested_completer
-from bot_helper.utils.format_str import FormatStr
+from .bot_helper.address_book import AddressBook
+from .bot_helper.birthday import Birthday, DATE_FORMAT
+from .bot_helper.notes.note_book import NotesBook
+from .bot_helper.record import RecordAlreadyExistsException, Record
+from .bot_helper.save_data.save_on_disk import SaveAddressBookOnDisk
+from .bot_helper.sort_files import FileOrganizer
+from .bot_helper.utils.command_prompts import get_nested_completer
+from .bot_helper.utils.format_str import FormatStr
 
 class UserInterface(ABC):
     @abstractmethod
@@ -632,7 +632,7 @@ COMMANDS = {
 }
 
 
-def main(user_interface: UserInterface) -> None:
+def main(user_interface: UserInterface = ConsoleUserInterface()) -> None:
     while True:
         cli_input = user_interface.prompt_user_input(
             message="Type a command>>> ",

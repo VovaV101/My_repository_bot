@@ -1,6 +1,6 @@
 from typing import Generator
 
-from bot_helper.address import ADDRESS_KEY_LIST
+from ..address import ADDRESS_KEY_LIST
 
 
 class FormatStr:

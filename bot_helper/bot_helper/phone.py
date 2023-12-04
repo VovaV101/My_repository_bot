@@ -3,7 +3,7 @@ from __future__ import annotations
 from re import Match
 import re
 
-from bot_helper.field import Field
+from .field import Field
 
 
 class Phone(Field):
