@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "bot-poetry"
+version = "0.1.0"
+description = "Package for sorting files in a specific folder, adding data "
+authors = ["VovaV101 <vova0190@birmir.net>"]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+prompt_toolkit = "^3.0.0"
+tabulate = "^0.9.0"
+pydantic = "^1.8.2"
+rarfile = "^4.0"
+transliterate = "^1.10.2"
+
+[tool.poetry.dev-dependencies]
+
+[tool.poetry.scripts]
+bot_helper = "bot_helper.bot:main"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
